@@ -58,39 +58,38 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req,res,next) =>{
-  if(!['/login','/'].includes(req.originalUrl)){
-    req.session.returnTo=req.originalUrl;
-  }
+  // if(!['/','/login'].includes(req.originalUrl)){
+  //   req.session.returnTo=req.originalUrl;
+  // }
+  // else(
+  //   req.session.returnTo='/campgrounds'
+  // )
 res.locals.currentUser=req.user;
 res.locals.success = req.flash('success');
 res.locals.error = req.flash('error');
 next();
 })
 
-app.get('/fakeUser',async (req,res)=>{
-  const user = new User({email:'abc@gmail.com',username:'ABC'});
-  const newUser= await User.register(user,'chicken');
-  res.send(newUser);
-})
 
 app.use('/',userRoutes);
 app.use('/campgrounds',campgroundRoutes);
 app.use('/campgrounds/:id/reviews',reviewRoutes);
 
+
 app.get("/", (req, res) => {
   res.render("home");
 });
 
-
-
 app.all("*", (req, res, next) => {
   next(new ExpressError("Page Not Found", 404));
 });
+
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   if (!err.message) err.message = "Oh No. Something went wrong!!";
   res.status(statusCode).render("error", { err });
 });
+
 app.listen(3000, () => {
   console.log("Serving on port 3000");
 });
